@@ -51,7 +51,7 @@ public class HospitalSetController {
     public Result findPageHospSet(
             @PathVariable Long current,
             @PathVariable Long limit,
-            @RequestBody(required = false) HospitalSetQueryVo hospitalSetQueryVo){
+            HospitalSetQueryVo hospitalSetQueryVo){
         Page<HospitalSet> page = new Page<>(current, limit);
 
         LambdaQueryWrapper<HospitalSet> queryWrapper = new LambdaQueryWrapper<>();
