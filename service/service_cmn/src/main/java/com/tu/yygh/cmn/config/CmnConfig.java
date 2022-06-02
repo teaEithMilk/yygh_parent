@@ -1,14 +1,14 @@
-package com.tu.yygh.hosp.config;
+package com.tu.yygh.cmn.config;
+
+
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
-
-@MapperScan("com.tu.yygh.hosp.mapper")
+@MapperScan("com.tu.yygh.cmn.mapper")
 @Configuration
-public class HospConfig {
+public class CmnConfig {
     /**
      * 分页插件
      * */

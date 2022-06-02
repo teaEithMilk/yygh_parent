@@ -6,7 +6,6 @@ import com.atguigu.yygh.vo.hosp.HospitalSetQueryVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.tu.yygh.common.exception.YyghException;
 import com.tu.yygh.common.result.Result;
 import com.tu.yygh.common.utils.MD5;
 import com.tu.yygh.hosp.service.HospitalSetService;
@@ -21,6 +20,8 @@ import java.util.Random;
 @Api(tags = "医院设置管理")
 @RestController
 @RequestMapping("/admin/hosp/hospitalSet")
+//跨域注解
+@CrossOrigin
 public class HospitalSetController {
 
     @Autowired
@@ -35,7 +36,7 @@ public class HospitalSetController {
 
 
     @ApiOperation("删除医院信息")
-    @DeleteMapping("/del/{id}")
+    @DeleteMapping("del/{id}")
     public Result delete(@PathVariable Long id){
         boolean b = hospitalSetService.removeById(id);
         if(b){
@@ -47,11 +48,11 @@ public class HospitalSetController {
 
     //条件查询分页
     @ApiOperation("获取所有医院信息分页带条件")
-    @GetMapping("/findPageHospSet/{current}/{limit}")
+    @PostMapping("/findPageHospSet/{current}/{limit}")
     public Result findPageHospSet(
             @PathVariable Long current,
             @PathVariable Long limit,
-            HospitalSetQueryVo hospitalSetQueryVo){
+                HospitalSetQueryVo hospitalSetQueryVo){
         Page<HospitalSet> page = new Page<>(current, limit);
 
         LambdaQueryWrapper<HospitalSet> queryWrapper = new LambdaQueryWrapper<>();
@@ -102,12 +103,6 @@ public class HospitalSetController {
     @ApiOperation("根据id获取医院信息")
     @GetMapping("/getHospSet/{id}")
     public Result getHospSet(@PathVariable Long id) {
-
-        try {
-            int i = 1/0;
-        } catch (Exception e) {
-            throw  new YyghException("查询失败",201);
-        }
         HospitalSet hospitalSet = hospitalSetService.getById(id);
         return Result.ok(hospitalSet);
     }
