@@ -1,19 +1,68 @@
 package com.tu.yygh.cmn.service.impl;
 
+import com.alibaba.excel.EasyExcel;
 import com.atguigu.yygh.model.cmn.Dict;
+import com.atguigu.yygh.vo.cmn.DictEeVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tu.yygh.cmn.listener.DictListener;
 import com.tu.yygh.cmn.mapper.DictMapper;
 import com.tu.yygh.cmn.service.DictService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements DictService {
 
+    //导入数据字典
+    @Override
+    public void importData(MultipartFile file) {
+        try {
+            EasyExcel.read(
+                    file.getInputStream(),
+                    DictEeVo.class,
+                    new DictListener(baseMapper)).sheet().doRead();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //导出数据字典
+    @Override
+    public void exportDictData(HttpServletResponse response) {
+        try {
+            //设置下载信息
+            response.setContentType("application/vnd.ms-excel");
+            response.setCharacterEncoding("utf-8");
+            String fileName = "dict";
+            response.setHeader("Content-disposition", "attachment;filename="+ fileName + ".xlsx");
+
+            //查询数据库
+            List<Dict> dictList = baseMapper.selectList(null);
+
+            List<DictEeVo> dictVoList = new ArrayList<>();
+
+            for(Dict dict : dictList) {
+                DictEeVo dictVo = new DictEeVo();
+                BeanUtils.copyProperties(dict, dictVo);
+                dictVoList.add(dictVo);
+            }
+
+            EasyExcel.write(response.getOutputStream(), DictEeVo.class).sheet("数据字典").doWrite(dictVoList);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     //根据数据Id查询子数据列表
+
     @Override
     public List<Dict> findChlidData(Long id) {
 
