@@ -4,12 +4,13 @@ import com.alibaba.excel.EasyExcel;
 import com.atguigu.yygh.model.cmn.Dict;
 import com.atguigu.yygh.vo.cmn.DictEeVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tu.yygh.cmn.listener.DictListener;
 import com.tu.yygh.cmn.mapper.DictMapper;
 import com.tu.yygh.cmn.service.DictService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +23,7 @@ import java.util.List;
 public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements DictService {
 
     //导入数据字典
+    @CacheEvict(value = "dict",allEntries = true)
     @Override
     public void importData(MultipartFile file) {
         try {
@@ -62,7 +64,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
     }
 
     //根据数据Id查询子数据列表
-
+    @Cacheable(value = "dict", keyGenerator = "keyGenerator")
     @Override
     public List<Dict> findChlidData(Long id) {
 
