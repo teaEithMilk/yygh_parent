@@ -1,6 +1,6 @@
 package com.tu.hospital.config;
 
-import com.atguigu.hospital.util.YyghException;
+import com.tu.hospital.util.YyghException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 /**
  * 全局异常处理类
  *
- * @author qy
+ * @authorqy
  */
 @ControllerAdvice
 @Slf4j
@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     /**
      * 自定义异常处理方法
      *
-     * @param e
+     * @parame
      * @return
      */
     @ExceptionHandler(YyghException.class)

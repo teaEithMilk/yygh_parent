@@ -1,6 +1,6 @@
 package com.tu.hospital.mapper;
 
-import com.atguigu.hospital.model.HospitalSet;
+import com.tu.hospital.model.HospitalSet;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

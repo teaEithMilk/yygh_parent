@@ -1,6 +1,6 @@
 package com.tu.hospital.mapper;
 
-import com.atguigu.hospital.model.Schedule;
+import com.tu.hospital.model.Schedule;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 

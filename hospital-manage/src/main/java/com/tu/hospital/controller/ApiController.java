@@ -1,9 +1,9 @@
 package com.tu.hospital.controller;
 
-import com.atguigu.hospital.mapper.HospitalSetMapper;
-import com.atguigu.hospital.model.HospitalSet;
-import com.atguigu.hospital.service.ApiService;
-import com.atguigu.hospital.util.YyghException;
+import com.tu.hospital.mapper.HospitalSetMapper;
+import com.tu.hospital.model.HospitalSet;
+import com.tu.hospital.service.ApiService;
+import com.tu.hospital.util.YyghException;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

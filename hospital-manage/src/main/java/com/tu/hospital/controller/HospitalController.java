@@ -1,8 +1,8 @@
 package com.tu.hospital.controller;
 
-import com.atguigu.hospital.service.ApiService;
-import com.atguigu.hospital.service.HospitalService;
-import com.atguigu.hospital.util.*;
+import com.tu.hospital.service.ApiService;
+import com.tu.hospital.service.HospitalService;
+import com.tu.hospital.util.*;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
