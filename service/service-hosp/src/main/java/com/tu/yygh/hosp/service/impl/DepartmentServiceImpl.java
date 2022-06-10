@@ -56,14 +56,14 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public Page<Department> findPageDepartment(Integer page, Integer limit, DepartmentQueryVo departmentQueryVo) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-//0为第一页
+        //0为第一页
         Pageable pageable = PageRequest.of(page-1, limit, sort);
 
         Department department = new Department();
         BeanUtils.copyProperties(departmentQueryVo, department);
         department.setIsDeleted(0);
 
-//创建匹配器，即如何使用查询条件
+        //创建匹配器，即如何使用查询条件
         ExampleMatcher matcher = ExampleMatcher.matching() //构建对象
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING) //改变默认字符串匹配方式：模糊查询
                 .withIgnoreCase(true); //改变默认大小写忽略方式：忽略大小写

@@ -1,7 +1,9 @@
 package com.tu.yygh.hosp.controller.api;
 import com.atguigu.yygh.model.hosp.Department;
 import com.atguigu.yygh.model.hosp.Hospital;
+import com.atguigu.yygh.model.hosp.Schedule;
 import com.atguigu.yygh.vo.hosp.DepartmentQueryVo;
+import com.atguigu.yygh.vo.hosp.ScheduleQueryVo;
 import com.tu.yygh.common.exception.YyghException;
 import com.tu.yygh.common.helper.HttpRequestHelper;
 import com.tu.yygh.common.result.Result;
@@ -10,6 +12,7 @@ import com.tu.yygh.common.utils.MD5;
 import com.tu.yygh.hosp.service.DepartmentService;
 import com.tu.yygh.hosp.service.HospitalService;
 import com.tu.yygh.hosp.service.HospitalSetService;
+import com.tu.yygh.hosp.service.ScheduleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +38,9 @@ public class ApiController {
 
     @Autowired
     private DepartmentService departmentService;
+
+    @Autowired
+    private ScheduleService scheduleService;
 
     @ApiOperation(value = "删除科室")
     @PostMapping("department/remove")
@@ -95,6 +101,67 @@ public class ApiController {
         departmentService.save(paramMap);
         return Result.ok();
     }
+    /**
+     * 上传排班接口
+     * */
+    @ApiOperation(value = "上传排班")
+    @PostMapping("/saveSchedule")
+    public Result saveSchedule(HttpServletRequest request){
+        //获取传递过来的医院信息，转为Object类型
+        Map<String, Object> paramMap = HttpRequestHelper.switchMap(request.getParameterMap());
+
+        //验证签名
+        isSign(paramMap);
+
+        //调用servicee
+        scheduleService.save(paramMap);
+
+        return Result.ok();
+    }
+    /**
+     * 查询排班接口
+     * */
+    @ApiOperation(value = "查询排班接口")
+    @PostMapping("schedule/list")
+    public Result findschedule(HttpServletRequest request){
+        //获取传递过来的医院信息，转为Object类型
+        Map<String, Object> paramMap = HttpRequestHelper.switchMap(request.getParameterMap());
+
+        //获取页码
+        int page = StringUtils.isEmpty(paramMap.get("page")) ? 1 : Integer.parseInt((String) paramMap.get("page"));
+        //页大小
+        int limit = StringUtils.isEmpty(paramMap.get("limit")) ? 10 : Integer.parseInt((String) paramMap.get("limit"));
+
+
+        //验证签名
+        isSign(paramMap);
+
+        //查询条件
+        ScheduleQueryVo scheduleQueryVo = new ScheduleQueryVo();
+        scheduleQueryVo.setHoscode(paramMap.get("hoscode").toString());
+
+        //调用方法
+        Page<Schedule> ScheduleList =  scheduleService.selectPage(page,limit,scheduleQueryVo);
+
+        return Result.ok(ScheduleList);
+    }
+
+    /**
+     * 删除排班接口
+     * */
+    @ApiOperation(value = "删除排班")
+    @PostMapping("schedule/remove")
+    public Result removeSchedule(HttpServletRequest request) {
+        //获取传递过来的医院信息，转为Object类型
+        Map<String, Object> paramMap = HttpRequestHelper.switchMap(request.getParameterMap());
+        //验证签名
+        isSign(paramMap);
+
+        //删除医院
+        scheduleService.remove(paramMap.get("hoscode").toString(),paramMap.get("hosScheduleId").toString());
+
+        return Result.ok();
+    }
 
     @ApiOperation(value = "查询医院")
     @PostMapping("/hospital/show")
@@ -102,6 +169,7 @@ public class ApiController {
         //获取传递过来的医院信息，转为Object类型
         Map<String, Object> paramMap = HttpRequestHelper.switchMap(request.getParameterMap());
 
+        //验证签名
         isSign(paramMap);
 
         //查询医院

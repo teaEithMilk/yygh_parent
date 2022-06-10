@@ -93,5 +93,32 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
         return false;
     }
 
+    /**
+     * 根据DictCode和value值获取数据字典名称
+     * */
+    @Override
+    public String getNameByParentDictCodeAndValue(String parentDictCode, String value) {
+        LambdaQueryWrapper<Dict> queryWrapper = new LambdaQueryWrapper<>();
 
+        queryWrapper.eq(Dict::getDictCode,parentDictCode);
+        queryWrapper.eq(Dict::getValue,value);
+
+        Dict dict = baseMapper.selectOne(queryWrapper);
+
+        return dict.getName();
+    }
+
+    /**
+     * 根据value值获取数据字典名称
+     * */
+    @Override
+    public String getNameByParentDictCodeAndValue(String value) {
+        LambdaQueryWrapper<Dict> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.eq(Dict::getValue,value);
+
+        Dict dict = baseMapper.selectOne(queryWrapper);
+
+        return dict.getName();
+    }
 }
