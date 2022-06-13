@@ -97,28 +97,37 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
      * 根据DictCode和value值获取数据字典名称
      * */
     @Override
-    public String getNameByParentDictCodeAndValue(String parentDictCode, String value) {
+    public String getName(String parentDictCode, String value) {
         LambdaQueryWrapper<Dict> queryWrapper = new LambdaQueryWrapper<>();
 
-        queryWrapper.eq(Dict::getDictCode,parentDictCode);
-        queryWrapper.eq(Dict::getValue,value);
-
-        Dict dict = baseMapper.selectOne(queryWrapper);
-
-        return dict.getName();
+        if(parentDictCode == null || parentDictCode == ""){
+            //根据value值查询
+            queryWrapper.eq(Dict::getValue,value);
+            Dict dict = baseMapper.selectOne(queryWrapper);
+            return dict.getName();
+        }else{//parentDictCode不为空，根据DictCode和value值获取
+            //根据dictCod获取dict对象，获得dict的id值
+            queryWrapper.eq(Dict::getDictCode,parentDictCode);
+            Dict codeDict = baseMapper.selectOne(queryWrapper);
+            Long id = codeDict.getId();
+            //根据id和value值查询
+            Dict dict = baseMapper.selectOne(
+                    new LambdaQueryWrapper<Dict>()
+                            .eq(Dict::getParentId, id)
+                            .eq(Dict::getValue, value));
+            return dict.getName();
+        }
     }
 
-    /**
-     * 根据value值获取数据字典名称
-     * */
     @Override
-    public String getNameByParentDictCodeAndValue(String value) {
-        LambdaQueryWrapper<Dict> queryWrapper = new LambdaQueryWrapper<>();
+    public List<Dict> findbyDictCode(String dictCode) {
+        //根据dictCode查询到ID
+        Dict dict = baseMapper.selectOne(new LambdaQueryWrapper<Dict>().eq(Dict::getDictCode,dictCode));
 
-        queryWrapper.eq(Dict::getValue,value);
-
-        Dict dict = baseMapper.selectOne(queryWrapper);
-
-        return dict.getName();
+        //根据ID查询子字典
+        List<Dict> dicts = baseMapper.selectList(
+                new LambdaQueryWrapper<Dict>()
+                        .eq(Dict::getParentId, dict.getId()));
+        return dicts;
     }
 }

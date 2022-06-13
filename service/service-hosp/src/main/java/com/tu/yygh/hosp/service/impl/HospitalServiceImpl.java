@@ -2,16 +2,17 @@ package com.tu.yygh.hosp.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.atguigu.yygh.model.hosp.Hospital;
-import com.atguigu.yygh.model.hosp.Schedule;
 import com.atguigu.yygh.vo.hosp.HospitalQueryVo;
+import com.tu.yygh.cmn.client.DictFeignClient;
 import com.tu.yygh.hosp.repository.HospitalRepository;
 import com.tu.yygh.hosp.service.HospitalService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
-
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -19,6 +20,10 @@ public class HospitalServiceImpl implements HospitalService {
 
     @Autowired
     private HospitalRepository hospitalRepository;
+
+    //远程调用feign
+    @Autowired
+    private DictFeignClient dictFeignClient;
 
     /**
      * 查询医院
@@ -80,8 +85,65 @@ public class HospitalServiceImpl implements HospitalService {
 
         //创建实例
         Example<Hospital> example = Example.of(hospital, matcher);
-        return hospitalRepository.findAll(example, pageable);
+        Page<Hospital> pages = hospitalRepository.findAll(example, pageable);
+
+        //获取数据，插入医院等级信息
+        List<Hospital> content = pages.getContent();
+
+        for (Hospital hos : content) {
+            String hostypeName = dictFeignClient.getName("Hostype", hos.getHostype());
+            hos.getParam().put("hostypeString",hostypeName);
+            //获取省地区
+            String provinceString = dictFeignClient.getName(hos.getProvinceCode());
+            //获取市地区
+            String cityString = dictFeignClient.getName(hos.getCityCode());
+            //获取区地区
+            String districtString = dictFeignClient.getName(hos.getDistrictCode());
+            //封装地区
+            hos.getParam().put("fullAddress", provinceString + cityString + districtString + hos.getAddress());
+        }
+        return pages;
     }
 
+    /**
+     * 更新医院上线状态
+     * */
+    @Override
+    public void updateStatus(String id, Integer status) {
+        //根据id获取对象
+        Hospital hospital = hospitalRepository.findById(id).get();
+        //修改状态值
+        hospital.setStatus(status);
+        hospital.setUpdateTime(new Date());
+        //修改
+        hospitalRepository.save(hospital);
+    }
 
+    /**
+     * 获取医院详情
+     * */
+    @Override
+    public Map<String, Object> showHospDetail(String id) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        Hospital hospital = hospitalRepository.findById(id).get();
+
+        result.put("hospital", hospital);
+
+        result.put("bookingRule",hospital.getBookingRule());
+
+        //获取省地区
+        String provinceString = dictFeignClient.getName(hospital.getProvinceCode());
+        //获取市地区
+        String cityString = dictFeignClient.getName(hospital.getCityCode());
+        //获取区地区
+        String districtString = dictFeignClient.getName(hospital.getDistrictCode());
+        //封装地区
+        hospital.getParam().put("fullAddress", provinceString + cityString + districtString + hospital.getAddress());
+
+        hospital.setBookingRule(null);
+
+        return result;
+    }
 }

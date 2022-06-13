@@ -20,11 +20,8 @@ public interface DictService extends IService<Dict> {
     /**
      * 根据DictCode和value值获取数据字典名称
      * */
-    String getNameByParentDictCodeAndValue(String parentDictCode, String value);
+    String getName(String parentDictCode, String value);
 
-    /**
-     * 根据Dvalue值获取数据字典名称
-     * */
-    String getNameByParentDictCodeAndValue(String value);
+    List<Dict> findbyDictCode(String dictCode);
 
 }

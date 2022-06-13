@@ -4,7 +4,6 @@ import com.atguigu.yygh.model.cmn.Dict;
 import com.tu.yygh.cmn.service.DictService;
 import com.tu.yygh.common.result.Result;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,16 @@ public class DictController{
 
     @Autowired
     private DictService dictService;
+
+    /**
+     * 根据dictCode获取下级节点
+     * */
+    @ApiOperation(value = "根据dictCode获取下级节点")
+    @GetMapping(value = "/findByDictCode/{dictCode}")
+    public Result findbyDictCode(@PathVariable String dictCode){
+        List<Dict> dicts =  dictService.findbyDictCode(dictCode);
+        return Result.ok(dicts);
+    }
 
     //导出数据字典
     @ApiOperation(value="导出")
@@ -51,7 +60,7 @@ public class DictController{
     }
 
     /**
-     * 根据DictCode和value值获取数据字典名称
+     *  根据DictCode和value值获取数据字典名称
      * */
     @ApiOperation(value = "根据DictCode和value值获取数据字典名称")
     @GetMapping(value = "/getName/{parentDictCode}/{value}")
@@ -61,18 +70,19 @@ public class DictController{
 
             @ApiParam(name = "value", value = "值", required = true)
             @PathVariable("value") String value) {
-        return dictService.getNameByParentDictCodeAndValue(parentDictCode, value);
+        return dictService.getName(parentDictCode, value);
 
     }
+
     /**
-     * 根据value值获取数据字典名称
+     *  根据value值获取数据字典名称
      * */
     @ApiOperation(value = "根据value值获取数据字典名称")
     @GetMapping(value = "/getName/{value}")
     public String getName(
             @ApiParam(name = "value", value = "值", required = true)
             @PathVariable("value") String value) {
-        return dictService.getNameByParentDictCodeAndValue("", value);
+        return dictService.getName("",value);
     }
 
 
