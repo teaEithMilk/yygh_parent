@@ -16,8 +16,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/cmn/dict")
 @Api(tags = "Dict设置管理")
-//跨域注解
-@CrossOrigin
 public class DictController{
 
     @Autowired

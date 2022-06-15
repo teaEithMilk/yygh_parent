@@ -119,6 +119,9 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
         }
     }
 
+    /**
+     * 根据dictCode获取下级节点
+     * */
     @Override
     public List<Dict> findbyDictCode(String dictCode) {
         //根据dictCode查询到ID

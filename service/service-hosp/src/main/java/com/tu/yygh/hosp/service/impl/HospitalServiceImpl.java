@@ -10,6 +10,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -73,7 +75,6 @@ public class HospitalServiceImpl implements HospitalService {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         //0为第一页
         Pageable pageable = PageRequest.of(page-1, limit, sort);
-
         Hospital hospital = new Hospital();
         BeanUtils.copyProperties(hospitalQueryVo, hospital);
         hospital.setIsDeleted(0);
@@ -146,4 +147,14 @@ public class HospitalServiceImpl implements HospitalService {
 
         return result;
     }
+
+
+    /**
+     * 根据医院名称获取医院列表
+     */
+    @Override
+    public List<Hospital> findByHosname(String hosname) {
+        return hospitalRepository.findHospitalByHosnameLike(hosname);
+    }
+
 }

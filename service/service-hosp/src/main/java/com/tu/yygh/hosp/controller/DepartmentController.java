@@ -12,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/hosp/department")
-@CrossOrigin
 @Api(tags = "科室管理接口")
 public class DepartmentController {
 

@@ -36,4 +36,9 @@ public interface DepartmentService {
      * **/
     List<DepartmentVo> findDeptTree(String hosCode);
 
+    /**
+     * 根据科室编号获取科室对象
+     * */
+    Department getByDepCode(String depCode);
+
 }

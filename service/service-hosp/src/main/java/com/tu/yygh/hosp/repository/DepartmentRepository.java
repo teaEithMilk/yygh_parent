@@ -16,4 +16,9 @@ public interface DepartmentRepository extends MongoRepository<Department,String>
     //继承了MongoRepository，只要遵守方法名规则，不需要实现方法
     Department getDepartmentByHoscodeAndDepcode(String hoscode, String depcode);
 
+    /**
+     * 根据科室编号获取科室对象
+     * */
+    Department getDepartmentBydepcode(String depCode);
+
 }
