@@ -27,7 +27,7 @@ public interface HospitalService {
 
 
     /**
-     * 获取医院详情
+     * 根据医院ID获取医院详情
      * */
     Map<String, Object> showHospDetail(String id);
 
@@ -36,4 +36,10 @@ public interface HospitalService {
      * 根据医院名称获取医院列表
      */
     List<Hospital> findByHosname(String hosname);
+
+    /**
+     * 根据医院编号获取医院详情信息
+     * */
+    Map<String, Object> findByHoscodeGetHospDetail(String hoscode);
+
 }

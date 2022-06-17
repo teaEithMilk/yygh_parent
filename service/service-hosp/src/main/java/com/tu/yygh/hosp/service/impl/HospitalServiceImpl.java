@@ -12,10 +12,7 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class HospitalServiceImpl implements HospitalService {
@@ -121,7 +118,7 @@ public class HospitalServiceImpl implements HospitalService {
     }
 
     /**
-     * 获取医院详情
+     * 根据医院ID获取医院详情信息
      * */
     @Override
     public Map<String, Object> showHospDetail(String id) {
@@ -155,6 +152,29 @@ public class HospitalServiceImpl implements HospitalService {
     @Override
     public List<Hospital> findByHosname(String hosname) {
         return hospitalRepository.findHospitalByHosnameLike(hosname);
+    }
+
+    /**
+     * 根据医院编号获取医院详情信息
+     * */
+    @Override
+    public Map<String, Object> findByHoscodeGetHospDetail(String hoscode) {
+        //最终返回结果
+        Map<String, Object> result = new HashMap<>();
+
+        //根据医院编号查询医院
+        Hospital hospital = this.getByHoscode(hoscode);
+
+        //医院信息
+        result.put("hospital", hospital);
+
+        //封装预约规则
+        result.put("bookingRule",hospital.getBookingRule());
+
+        //不需要重复返回
+        hospital.setBookingRule(null);
+
+        return result;
     }
 
 }
