@@ -16,6 +16,7 @@
         <module>service_cmn</module>
         <module>service_user</module>
         <module>service_sms</module>
+        <module>service_oss</module>
     </modules>
 
     <dependencies>
@@ -55,6 +56,18 @@
 <!--            <groupId>com.alibaba.cloud</groupId>-->
 <!--            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>-->
 <!--        </dependency>-->
+
+        <dependency>
+            <groupId>com.tu</groupId>
+            <artifactId>service_utils</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tu</groupId>
+            <artifactId>common_utils</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 
