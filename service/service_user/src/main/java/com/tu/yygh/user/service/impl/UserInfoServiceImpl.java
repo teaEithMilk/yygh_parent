@@ -1,21 +1,28 @@
 package com.tu.yygh.user.service.impl;
 
+import com.atguigu.yygh.enums.AuthStatusEnum;
+import com.atguigu.yygh.model.user.Patient;
 import com.atguigu.yygh.model.user.UserInfo;
 import com.atguigu.yygh.vo.user.LoginVo;
+import com.atguigu.yygh.vo.user.UserAuthVo;
+import com.atguigu.yygh.vo.user.UserInfoQueryVo;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tu.yygh.common.exception.YyghException;
 import com.tu.yygh.common.helper.JwtHelper;
-import com.tu.yygh.common.result.Result;
 import com.tu.yygh.common.result.ResultCodeEnum;
 import com.tu.yygh.user.mapper.UserInfoMapper;
+import com.tu.yygh.user.service.PatientService;
 import com.tu.yygh.user.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -23,6 +30,11 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     @Autowired
     private RedisTemplate<String,String> redisTemplate;
+
+    @Autowired
+    private PatientService patientService;
+
+
 
     /**
      * 用户手机号登录
@@ -112,4 +124,133 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
         return userInfo;
     }
+
+    /**
+     *   用户认证接口
+     * */
+    @Override
+    public void userAuth(Long userId, UserAuthVo userAuthVo) {
+        //根据用户ID查询用户ID
+        UserInfo userInfo = baseMapper.selectById(userId);
+        //设置认证信息
+        //姓名
+        userInfo.setName(userAuthVo.getName());
+        //证件类型
+        userInfo.setCertificatesType(userAuthVo.getCertificatesType());
+        //证件编号
+        userInfo.setCertificatesNo(userAuthVo.getCertificatesNo());
+        //证件照片
+        userInfo.setCertificatesUrl(userAuthVo.getCertificatesUrl());
+        //证件状态，或是认证中，或是认证失败，成功等
+        userInfo.setAuthStatus(AuthStatusEnum.AUTH_RUN.getStatus());
+        //进行信息更新
+        baseMapper.updateById(userInfo);
+    }
+
+    /**
+     *  获取用户ID信息接口
+     * */
+    @Override
+    public UserInfo getUserInfo(Long userId) {
+        UserInfo userInfo = baseMapper.selectById(userId);
+
+        return userInfo;
+    }
+
+    //用户列表条件带分页
+    //用户列表（条件查询带分页）
+    @Override
+    public IPage<UserInfo> selectPage(Page<UserInfo> pageParam, UserInfoQueryVo userInfoQueryVo) {
+
+        //UserInfoQueryVo获取条件值
+        String name = userInfoQueryVo.getKeyword(); //用户名称
+        Integer status = userInfoQueryVo.getStatus();//用户状态
+        Integer authStatus = userInfoQueryVo.getAuthStatus(); //认证状态
+        String createTimeBegin = userInfoQueryVo.getCreateTimeBegin(); //开始时间
+        String createTimeEnd = userInfoQueryVo.getCreateTimeEnd(); //结束时间
+        //对条件值进行非空判断
+        QueryWrapper<UserInfo> wrapper = new QueryWrapper<>();
+        if(!StringUtils.isEmpty(name)) {
+            wrapper.like("name",name);
+        }
+        if(!StringUtils.isEmpty(status)) {
+            wrapper.eq("status",status);
+        }
+        if(!StringUtils.isEmpty(authStatus)) {
+            wrapper.eq("auth_status",authStatus);
+        }
+        if(!StringUtils.isEmpty(createTimeBegin)) {
+            wrapper.ge("create_time",createTimeBegin);
+        }
+        if(!StringUtils.isEmpty(createTimeEnd)) {
+            wrapper.le("create_time",createTimeEnd);
+        }
+
+
+        Page<UserInfo> userInfoPage = baseMapper.selectPage(pageParam, wrapper);
+
+        userInfoPage.getRecords().stream().forEach(item -> {
+            this.packageUserInfo(item);
+        });
+
+        return userInfoPage;
+    }
+
+    //编号变成对应值封装
+    private UserInfo packageUserInfo(UserInfo userInfo) {
+        //处理认证状态编码
+        userInfo.getParam().put("authStatusString",AuthStatusEnum.getStatusNameByStatus(userInfo.getAuthStatus()));
+        //处理用户状态 0  1
+        String statusString = userInfo.getStatus().intValue()==0 ?"锁定" : "正常";
+        userInfo.getParam().put("statusString",statusString);
+        return userInfo;
+    }
+
+    /**
+     * 用户锁定
+     * @param userId
+     * @param status 0：锁定 1：正常
+     */
+
+    @Override
+    public void lock(Long userId, Integer status) {
+        if(status.intValue() == 0 || status.intValue() == 1) {
+            UserInfo userInfo = this.getById(userId);
+            userInfo.setStatus(status);
+            this.updateById(userInfo);
+        }
+    }
+
+
+    /**
+     * 详情
+     * @param userId
+     * @return
+     */
+    @Override
+    public Map<String, Object> show(Long userId) {
+        Map<String,Object> map = new HashMap<>();
+        //根据userid查询用户信息
+        UserInfo userInfo = this.packageUserInfo(baseMapper.selectById(userId));
+        map.put("userInfo",userInfo);
+        //根据userid查询就诊人信息
+        List<Patient> patientList = patientService.findAllUserId(userId);
+        map.put("patientList",patientList);
+        return map;
+    }
+
+    /**
+     * 认证审批
+     * @param userId
+     * @param authStatus 2：通过 -1：不通过
+     */
+    @Override
+    public void approval(Long userId, Integer authStatus) {
+        if(authStatus.intValue()==2 || authStatus.intValue()==-1) {
+            UserInfo userInfo = baseMapper.selectById(userId);
+            userInfo.setAuthStatus(authStatus);
+            baseMapper.updateById(userInfo);
+        }
+    }
+
 }

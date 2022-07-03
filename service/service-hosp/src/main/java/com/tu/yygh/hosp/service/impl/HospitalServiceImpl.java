@@ -177,4 +177,13 @@ public class HospitalServiceImpl implements HospitalService {
         return result;
     }
 
+
+    /**
+     * 根据医院编号获取医院名称
+     * */
+    @Override
+    public String getHospName(String hoscode) {
+        
+        return null;
+    }
 }

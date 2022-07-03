@@ -8,9 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/oss/file")
 public class FileApiController {
@@ -24,12 +21,6 @@ public class FileApiController {
         //获取上传文件
         String url = fileService.upload(file);
         return Result.ok(url);
-    }
-
-
-    public void Tets(){
-        List list = new ArrayList();
-
     }
 
 }

@@ -42,4 +42,8 @@ public interface HospitalService {
      * */
     Map<String, Object> findByHoscodeGetHospDetail(String hoscode);
 
+    /**
+     * 根据医院编号获取医院名称
+     * */
+    String getHospName(String hoscode);
 }
