@@ -15,7 +15,7 @@ public interface DictFeignClient {
      * */
     @ApiOperation(value = "根据DictCode和value值获取数据字典名称")
     @GetMapping(value = "/admin/cmn/dict/getName/{parentDictCode}/{value}")
-    public String getName(
+    String getName(
             @ApiParam(name = "parentDictCode", value = "上级编码", required = true)
             @PathVariable("parentDictCode") String parentDictCode,
 
@@ -27,7 +27,7 @@ public interface DictFeignClient {
      * */
     @ApiOperation(value = "根据value值获取数据字典名称")
     @GetMapping(value = "/admin/cmn/dict/getName/{value}")
-    public String getName(
+    String getName(
             @ApiParam(name = "value", value = "值", required = true)
             @PathVariable("value") String value);
 }

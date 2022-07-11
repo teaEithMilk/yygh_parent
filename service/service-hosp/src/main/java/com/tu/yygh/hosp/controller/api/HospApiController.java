@@ -2,9 +2,12 @@ package com.tu.yygh.hosp.controller.api;
 
 import com.atguigu.yygh.model.hosp.Hospital;
 import com.atguigu.yygh.vo.hosp.HospitalQueryVo;
+import com.atguigu.yygh.vo.hosp.ScheduleOrderVo;
+import com.atguigu.yygh.vo.order.SignInfoVo;
 import com.tu.yygh.common.result.Result;
 import com.tu.yygh.hosp.service.DepartmentService;
 import com.tu.yygh.hosp.service.HospitalService;
+import com.tu.yygh.hosp.service.HospitalSetService;
 import com.tu.yygh.hosp.service.ScheduleService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -22,6 +25,9 @@ public class HospApiController {
 
     @Autowired
     private HospitalService hospitalService;
+
+    @Autowired
+    private HospitalSetService hospitalSetService;
 
     @Autowired
     private DepartmentService departmentService;
@@ -95,5 +101,20 @@ public class HospApiController {
         return Result.ok(scheduleService.getById(scheduleId));
     }
 
+    @ApiOperation(value = "根据排班id获取预约下单数据")
+    @GetMapping("inner/getScheduleOrderVo/{scheduleId}")
+    public ScheduleOrderVo getScheduleOrderVo(
+            @ApiParam(name = "scheduleId", value = "排班id", required = true)
+            @PathVariable("scheduleId") String scheduleId) {
+        return scheduleService.getScheduleOrderVo(scheduleId);
+    }
 
+
+    @ApiOperation(value = "获取医院签名信息")
+    @GetMapping("inner/getSignInfoVo/{hoscode}")
+    public SignInfoVo getSignInfoVo(
+            @ApiParam(name = "hoscode", value = "医院code", required = true)
+            @PathVariable("hoscode") String hoscode) {
+        return hospitalSetService.getSignInfoVo(hoscode);
+    }
 }
